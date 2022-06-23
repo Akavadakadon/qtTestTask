@@ -1,0 +1,4 @@
+host:localhost
+dataBase:testTask
+userName:userName
+password:password

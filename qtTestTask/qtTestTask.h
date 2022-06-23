@@ -13,4 +13,8 @@ public:
 
 private:
     Ui::qtTestTaskClass ui;
+
+private slots:
+    void ClearTable();
+    void LoadTable();
 };
