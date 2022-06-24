@@ -19,6 +19,12 @@ public:
 	QList<EditorModel> LoadDefault();
 	QList<EditorModel> Load();
 	int Connect();
+
+	void Select();//insert
+	void Insert(EditorModel newEditor);//insert Delete Update
+	void Delete();//
+	void Update();// 
+	void Create(QString table);// Create
 signals:
 	void afgan();
 	void initiated(QList<EditorModel> db);

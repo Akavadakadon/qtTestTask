@@ -11,8 +11,9 @@ void myThread::Start()
     myDB = new MyDB(dbInfo);
 
     myDB->Connect();
-    auto ass = myDB->Load();
-    myModel= new MySQLModel(ass);
+    auto content = myDB->Load();
+    //TODO: сигнал есть ли данные для загрузки
+    myModel= new MySQLModel(content);
 
     emit myThread::dataLoaded(myModel);
 }

@@ -7,11 +7,13 @@ struct DBinf
 	QString dataBase;
 	QString password;
 	QString userName;
+	QString table;
 	bool login;
 };
 
 struct EditorModel
 {
+	// dbInfo.dataBase
 	QString texteditor;
 	QString fileformats;
 	QString encoding;

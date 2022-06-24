@@ -1,4 +1,4 @@
 host:localhost
-dataBase:testTask
+dataBase:testTask.db
 userName:userName
 password:password
