@@ -2,6 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_qtTestTask.h"
+#include "MySQLModel.h"
 
 class qtTestTask : public QMainWindow
 {
@@ -17,4 +18,5 @@ private:
 private slots:
     void ClearTable();
     void LoadTable();
+    void Display(MySQLModel* myModel);
 };

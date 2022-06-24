@@ -88,12 +88,19 @@
     <QtRcc Include="qtTestTask.qrc" />
     <QtUic Include="qtTestTask.ui" />
     <QtMoc Include="qtTestTask.h" />
+    <ClCompile Include="model.cpp" />
     <ClCompile Include="MyDB.cpp" />
+    <ClCompile Include="MySQLModel.cpp" />
+    <ClCompile Include="myThread.cpp" />
     <ClCompile Include="qtTestTask.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MyDB.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MySQLModel.h" />
+    <QtMoc Include="myThread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

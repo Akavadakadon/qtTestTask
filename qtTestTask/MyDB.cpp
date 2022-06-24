@@ -1,67 +1,133 @@
 #include "MyDB.h"
-#include <fstream>//sstream
-#include <sstream>//sstream
-#include <list>
+#include "model.cpp"
+#include <QSqlQuery>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+#include <QXmlStreamReader>
+#include <QDebug>Q_DEBUG
 
 using namespace std;
 
 int MyDB::Connect()
 {
-    try {
-        //db.setHostName(QString::fromStdString(dbInfo.host));
-        db.setDatabaseName(QString::fromStdString(dbInfo.dataBase));
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setHostName(dbInfo.host);
+        QDir databasePath;
+        db.setDatabaseName(dbInfo.dataBase);
         if (dbInfo.login)
         {
-            db.setUserName(QString::fromStdString(dbInfo.userName));
-            db.setPassword(QString::fromStdString(dbInfo.password));
+            db.setUserName(dbInfo.userName);
+            db.setPassword(dbInfo.password);
         }
-        bool ok = db.open(); //??
-    }
-    catch (exception e)
-    {
-        emit error(e.what());
-        return -1;
-    }
+        bool ok = db.open(); 
+        if (!ok)
+            return 0;
     return 0;
 }
 
-DBinf MyDB::LoadFile(std::string filePath)
+QList<EditorModel> MyDB::Load()
 {
-    fstream fileStream(filePath);
-    if (fileStream.fail())
+    // Test LoadDefault();
+    //LoadDefault();
+    auto tables = db.tables();
+    QList<EditorModel> content;
+    if (tables.size() == 0 || true)
     {
-        throw string("No such file");
+        // Пустая бд, заполняем ее.
+        // Загружаем из TestFolder .xml
+        content = LoadDefault();
     }
-    stringstream strStream;
-    string file, host, dataBase, password, userName;
-    const char *anotherList[] = {"host", "dataBase", "password", "userName",""};
-    list<string> stringList;
-    strStream << fileStream.rdbuf();
-    file = string(strStream.str())+'\n';
-    fileStream.close();
+    else
+    {
 
-    int pos = 0;
-    while ((pos = file.find('\n')) != -1)
-    {
-        string line = file.substr(0, pos);
-        stringList.push_back(line);
-        file.erase(0, pos + 1);
     }
+
+    return content;
+}
+
+QList<EditorModel> MyDB::LoadDefault()
+{
+    QString path = "TestFolder/";
+    QDir directory(path);
+    QStringList files = directory.entryList(QStringList() << "*.xml", QDir::Files);
+    QXmlStreamReader xmlReader;
+    QList<EditorModel> editorList;
+    if (files.size() == 0)
+    {
+        path = "../TestFolder/";
+        directory = QDir(path);
+        files = directory.entryList(QStringList() << "*.xml", QDir::Files);
+    }
+    if (files.size() == 0)
+    {
+        return editorList;
+    }
+    int fileOpen;
+    for (QString filename : files)
+    {
+        QFile* file = new QFile(path + filename);
+        bool allok = true;
+        fileOpen = file->open(QIODevice::ReadOnly | QIODevice::Text);
+        xmlReader.setDevice(file);
+        EditorModel editor;
+        // root texteditor fileformats encoding hasintellisense hasplugins cancompile
+        while (!xmlReader.atEnd() && !xmlReader.hasError())
+        {
+            QXmlStreamReader::TokenType token = xmlReader.readNext();
+            if (token != QXmlStreamReader::StartElement)
+            {
+                continue;
+            }
+            QString tokenStr1 = xmlReader.name().toString();
+            if (tokenStr1 == "texteditor")
+                editor.texteditor = xmlReader.readElementText();
+            else if (tokenStr1 == "fileformats")
+                editor.fileformats = xmlReader.readElementText();
+            else if (tokenStr1 == "encoding")
+                editor.encoding = xmlReader.readElementText();
+            else if (tokenStr1 == "hasintellisense")
+                editor.hasintellisense = xmlReader.readElementText();
+            else if (tokenStr1 == "hasplugins")
+                editor.hasplugins = xmlReader.readElementText();
+            else if (tokenStr1 == "cancompile")
+                editor.cancompile = xmlReader.readElementText();
+            else
+                continue;
+            if (xmlReader.hasError())
+            {
+                //QString error = xmlReader.errorString();
+                //error = " xml error: " + editor.texteditor + " " + error;
+                allok = false;
+            }
+        }
+        if (allok)
+            editorList.append(editor);
+    }
+    return editorList;
+}
+
+DBinf MyDB::LoadFile(QString filePath)
+{
+    QString file, host, dataBase, password, userName;
+    QFile f(filePath);
+    if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
+        return DBinf{ host, dataBase, password, userName, userName != "" };;
+    QTextStream in(&f);
+    file = in.readAll();
+    QStringList stringList = file.split('\n');
 
     for (auto& str : stringList)
     {
-        if((pos = str.find(':'))==-1)
-            continue;
-        string key = str.substr(0, pos);
-        string value = str.substr(pos + 1, str.length() - pos);
-        if (key == "host")
-            host = value;
-        if (key == "dataBase")
-            dataBase = value;
-        if (key == "password")
-            password = value;
-        if (key == "userName")
-            userName = value;
+        QStringList stringList = str.split(':');
+        if (stringList.first() == "host")
+            host = stringList.last();
+        if (stringList.first() == "dataBase")
+            dataBase = stringList.last();
+        if (stringList.first() == "password")
+            password = stringList.last();
+        if (stringList.first() == "userName")
+            userName = stringList.last();
     }
 
     return DBinf{ host, dataBase, password, userName, userName!=""};
@@ -69,5 +135,5 @@ DBinf MyDB::LoadFile(std::string filePath)
 
 MyDB::MyDB(DBinf _dbInfo):dbInfo(_dbInfo)
 {
-    db = QSqlDatabase::addDatabase("QSQLITE2 ");
+    db = QSqlDatabase::addDatabase("QSQLITE");
 }
