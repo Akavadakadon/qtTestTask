@@ -33,6 +33,7 @@ QList<EditorModel> MyDB::Load()
     QList<EditorModel> content;
 
     auto yeye = tables.contains(dbInfo.table);
+    // TODO: Удалить true
     if (!yeye || true)
     {
         // Пустая бд, заполняем ее.

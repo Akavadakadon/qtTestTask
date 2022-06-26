@@ -15,6 +15,10 @@ public:
     myThread();
 public slots:
     void Start();
+    void UpdateTable()
+    {
+
+    }
 signals:
     void dataLoaded(MySQLModel* myModel);
 };

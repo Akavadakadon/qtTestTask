@@ -85,6 +85,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MyDelegate.cpp" />
+    <ClCompile Include="TD.cpp" />
     <QtRcc Include="qtTestTask.qrc" />
     <QtUic Include="qtTestTask.ui" />
     <QtMoc Include="qtTestTask.h" />
@@ -99,7 +101,9 @@
     <QtMoc Include="MyDB.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="MyDelegate.h" />
     <ClInclude Include="MySQLModel.h" />
+    <QtMoc Include="TD.h" />
     <QtMoc Include="myThread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

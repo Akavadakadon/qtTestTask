@@ -52,12 +52,24 @@
     <ClCompile Include="model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyDelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MyDB.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="myThread.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="TD.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MyDelegate.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
