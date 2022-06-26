@@ -21,12 +21,13 @@ public:
 	int Connect();
 
 	void Select();//insert
+	void SelectAll();//insert
 	void Insert(EditorModel newEditor);//insert Delete Update
 	void Delete();//
 	void Update();// 
 	void Create(QString table);// Create
 signals:
-	void afgan();
+	void DataReady(QList<EditorModel> db);
 	void initiated(QList<EditorModel> db);
 	void error(const char* error);
 };

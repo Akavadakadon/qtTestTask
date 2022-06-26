@@ -87,12 +87,12 @@ bool MySQLModel::setData(const QModelIndex& index, const QVariant& value, int ro
     if (role == Qt::EditRole) {
         if (!checkIndex(index))
             return false;
-
         editors[row].set(col, value.toString());
+        EditorModel changedEditor = editors[row];
+        emit MySQLModel::dataChanged(changedEditor);
         return true;
-
     }
-    return false;
+    return QAbstractTableModel::setData(index, value, role);
 }
 
 //QList<EditorModel> MySQLModel::select()

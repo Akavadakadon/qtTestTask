@@ -6,6 +6,7 @@
 #include "MySQLModel.h"
 #include "TD.h"
 #include "MyDelegate.h"
+#include "myThread.h"
 
 class qtTestTask : public QMainWindow
 {
@@ -18,8 +19,10 @@ public:
 
 private:
     Ui::qtTestTaskClass ui;
+    myThread* thread;
 
 private slots:
+    void rmEditor(int row);
     void ClearTable();
     void LoadTable();
     void Display(MySQLModel* myModel);
@@ -27,4 +30,5 @@ private slots:
     void Mouse1(const QModelIndex& index);
     void viewClicked(const QModelIndex& idx);
     void mouseReleaseEvent(QMouseEvent* event) override;
+    void tableContextMenu(const QPoint&);
 };

@@ -51,6 +51,7 @@ QList<EditorModel> MyDB::Load()
 
     }
     Select();
+    //emit MyDB::DataReady(content);
     return content;
 }
 

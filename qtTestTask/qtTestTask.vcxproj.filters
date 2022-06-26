@@ -72,10 +72,8 @@
     <QtMoc Include="MyDelegate.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="MySQLModel.h">
+    <QtMoc Include="MySQLModel.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
+    </QtMoc>
   </ItemGroup>
 </Project>

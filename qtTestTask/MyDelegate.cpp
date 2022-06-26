@@ -1,32 +1,46 @@
 #include "MyDelegate.h"
 #include <qlineedit>
 #include <QLineEdit>
+#include <QMenu>
+#include <QContextMenuEvent>
 
 MyDelegate::MyDelegate(QObject* parent)
 {
 
 }
 
+class MyEditLine :public QLineEdit
+{
+public:
+    MyEditLine() {}
+    MyEditLine(QWidget* parent = nullptr) :QLineEdit(parent) {}
+    void MyEditLine::contextMenuEvent(QContextMenuEvent* event)
+    {
+        QMenu contextMenu(tr("Context menu"), this);
+        contextMenu.addAction(("Context menu too"));
+        contextMenu.exec(event->globalPos());
+    }
+};
+
 QWidget* MyDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    QLineEdit* editor = new QLineEdit(parent);
+    QStyleOptionViewItem viewOption(option);
+    if (option.state.testFlag(QStyle::State_HasFocus))
+        viewOption.state = viewOption.state ^ QStyle::State_None;
+    MyEditLine* editor = new MyEditLine(parent);
     return editor;
 }
 
 void MyDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-    // Get the value via index of the Model
     QString value = index.model()->data(index, Qt::EditRole).toString();
-
-    // Put the value into the SpinBox
-    QLineEdit* spinbox = static_cast<QLineEdit*>(editor);
+    MyEditLine* spinbox = static_cast<MyEditLine*>(editor);
     spinbox->setText(value);
 }
 
 void MyDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
-    QLineEdit* spinbox = static_cast<QLineEdit*>(editor);
-    //spinbox->interpretText();
+    MyEditLine* spinbox = static_cast<MyEditLine*>(editor);
     QString value = spinbox->text();
     model->setData(index, value, Qt::EditRole);
 }

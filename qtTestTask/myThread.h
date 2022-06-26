@@ -15,11 +15,14 @@ public:
     myThread();
 public slots:
     void Start();
-    void UpdateTable()
+    void rmEditor(int row);
+    void dataChanged()
     {
 
     }
+    //void DataReady(MySQLModel* myModel);
 signals:
     void dataLoaded(MySQLModel* myModel);
+    //TODO: Replace dataLoaded with dataReady
 };
 

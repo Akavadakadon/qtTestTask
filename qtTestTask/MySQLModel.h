@@ -4,9 +4,9 @@
 class MySQLModel :
     public QAbstractTableModel
 {
+    Q_OBJECT
 private:
     QList<EditorModel> editors;
-    QList<QString> editors1;
 
 public:
     MySQLModel(QObject* parent = nullptr);
@@ -20,5 +20,9 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
     QList<EditorModel> select();
+
+signals:
+    //TODO: содинить с контроллером и БД
+    void dataChanged(EditorModel changedEditor);
 };
 

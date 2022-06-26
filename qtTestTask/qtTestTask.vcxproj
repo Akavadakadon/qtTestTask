@@ -102,7 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MyDelegate.h" />
-    <ClInclude Include="MySQLModel.h" />
+    <QtMoc Include="MySQLModel.h" />
     <QtMoc Include="TD.h" />
     <QtMoc Include="myThread.h" />
   </ItemGroup>

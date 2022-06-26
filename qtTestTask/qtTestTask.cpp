@@ -1,11 +1,7 @@
 #include "qtTestTask.h"
-#include "myThread.h"
 #include <QMouseEvent>
 #include <QStandardItemModel>
 #include <QModelIndex>
-
-
-//#include "MyDB.h"
 
 void qtTestTask::viewClicked(const QModelIndex& idx)
 {
@@ -13,7 +9,7 @@ void qtTestTask::viewClicked(const QModelIndex& idx)
     qDebug() << QObject::trUtf8("Item %1 has been clicked.").arg(idx.data().toString());
 }
 
-qtTestTask::qtTestTask(QWidget *parent)
+qtTestTask::qtTestTask(QWidget* parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
@@ -22,14 +18,36 @@ qtTestTask::qtTestTask(QWidget *parent)
     connect(ui.pushButton_2, &QPushButton::clicked, this, &qtTestTask::LoadTable);
     connect(ui.tableView, &QTableView::clicked, this, &qtTestTask::viewClicked);
 
-    //connect(ui.tableView, &QTableView::clicked, SLOT(viewClicked(const QModelIndex & idx)));
 
+    ui.tableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui.tableView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(tableContextMenu(const QPoint&)));
 
     myDelegate = new MyDelegate(this);
     TD* myDelegate1 = new TD(this);
     ui.tableView->setItemDelegate(myDelegate);
 }
 
+
+void qtTestTask::tableContextMenu(const QPoint& pos)
+{
+    QModelIndex click = ui.tableView->indexAt(pos);
+    int row = click.row();
+    if (row == -1)
+        return;
+    qDebug() << QString("Row %1 has been clicked").arg(row);
+
+    QMenu contextMenu(tr("Context menu"), this);
+    QAction action1(QString::fromLocal8Bit("Удалить редактор"), this);
+
+    connect(&action1, &QAction::triggered, [this, row]() { thread->rmEditor(row); });
+    contextMenu.addAction(&action1);
+    contextMenu.exec(mapToGlobal(pos));
+
+}
+void qtTestTask::rmEditor(int row)
+{
+
+}
 void qtTestTask::mouseReleaseEvent(QMouseEvent* event)
 {
     //QMouseEvent* evt = new QMouseEvent(QEvent::MouseButtonRelease,
@@ -43,31 +61,23 @@ void qtTestTask::mouseReleaseEvent(QMouseEvent* event)
 
 void qtTestTask::ClearTable() 
 {
-    // Create a new model
-    // QStandardItemModel(int rows, int columns, QObject * parent = 0)
     QStandardItemModel* model = new QStandardItemModel(4, 2, this);
 
-    // Generate data
     for (int row = 0; row < 4; row++)
     {
         for (int col = 0; col < 2; col++)
         {
             QModelIndex index
                 = model->index(row, col, QModelIndex());
-            // 0 for all data
             model->setData(index, 0);
         }
     }
-    // Attach (tie) the model to the view
     ui.tableView->setModel(model);
-
-    // Tie the View with the new MyDelegate instance
-    // If we don not set this, it will use default delegate
 }
 
 void qtTestTask::LoadTable() 
 {
-    myThread* thread = new myThread();
+    thread = new myThread();
 
     connect(thread, &myThread::started, thread, &myThread::Start);
     connect(thread, &myThread::dataLoaded, this, [this](MySQLModel* myModel) {Display(myModel); });
@@ -87,13 +97,6 @@ void qtTestTask::Mouse(QMouseEvent* event)
 void qtTestTask::Display(MySQLModel* myModel)
 {
     ui.tableView->setModel(myModel); // 
-    for (size_t i = 0; i < myModel->columnCount(); i++) //a structure from a function that adds rows dynamically
-    {
-        for (size_t j = 0; j < myModel->rowCount(); j++) //a structure from a function that adds rows dynamically
-        {
-            //ui.tableView->openPersistentEditor(ui.tableView->model()->index(j, i));
-        }
-    }
 }
 
 

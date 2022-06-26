@@ -52,18 +52,25 @@ struct EditorModel
 		{
 		case 0:
 			texteditor = val;
+			break;
 		case 1:
 			fileformats = val;
+			break;
 		case 2:
 			encoding = val;
+			break;
 		case 3:
 			texteditor = val;
+			break;
 		case 4:
 			hasintellisense = val;
+			break;
 		case 5:
 			hasplugins = val;
+			break;
 		case 6:
 			cancompile = val;
+			break;
 		default:
 			break;
 		}
