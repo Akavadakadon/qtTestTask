@@ -18,11 +18,14 @@ public:
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role);
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+    void addEditor(EditorModel editor);
 
-    QList<EditorModel> select();
+    QList<EditorModel> getEditors();
+
+
 
 signals:
     //TODO: содинить с контроллером и БД
-    void dataChanged(EditorModel changedEditor);
+    void dataChanged(EditorModel changedEditor, int col);
 };
 

@@ -20,6 +20,12 @@ int MySQLModel::rowCount(const QModelIndex& parent) const
     return editors.size();
 }
 
+void MySQLModel::addEditor(EditorModel editor)
+{
+    editors.append(editor);
+}
+
+
 QVariant MySQLModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole)
@@ -89,11 +95,17 @@ bool MySQLModel::setData(const QModelIndex& index, const QVariant& value, int ro
             return false;
         editors[row].set(col, value.toString());
         EditorModel changedEditor = editors[row];
-        emit MySQLModel::dataChanged(changedEditor);
+        emit MySQLModel::dataChanged(changedEditor, col);
         return true;
     }
     return QAbstractTableModel::setData(index, value, role);
 }
+
+QList<EditorModel> MySQLModel::getEditors()
+{
+    return editors;
+}
+
 
 //QList<EditorModel> MySQLModel::select()
 //{

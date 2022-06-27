@@ -11,9 +11,56 @@ struct DBinf
 	bool login;
 };
 
+struct asd
+{
+	 static QString host ;
+	 static QString dataBase;
+	 static QString table;
+	 static QString folder ;
+};
+
+class bdInfo
+{
+public:
+	static QString host;
+	static QString dataBase;
+	static QString table;
+	static QString folder;
+
+	QString getHost() {
+		return host;
+	}
+	QString getDataBase() {
+		return dataBase;
+	}
+	QString getTable() {
+		return table;
+	}
+	QString getFolder() {
+		return folder;
+	}
+
+	static void setHost(QString val) {
+		host = val;
+	};
+	void setDataBase(QString val) {
+		dataBase = val;
+	};
+	void setTable(QString val) {
+		table = val;
+	};
+	void setFolder(QString val) {
+		folder = val;
+	};
+	bdInfo(int )
+	{
+	}
+};
+
 struct EditorModel
 {
 	// dbInfo.dataBase
+	int id;
 	QString texteditor;
 	QString fileformats;
 	QString encoding;
@@ -33,12 +80,10 @@ struct EditorModel
 		case 2:
 			return encoding;
 		case 3:
-			return texteditor;
-		case 4:
 			return hasintellisense;
-		case 5:
+		case 4:
 			return hasplugins;
-		case 6:
+		case 5:
 			return cancompile;
 		default:
 			break;
@@ -60,15 +105,12 @@ struct EditorModel
 			encoding = val;
 			break;
 		case 3:
-			texteditor = val;
-			break;
-		case 4:
 			hasintellisense = val;
 			break;
-		case 5:
+		case 4:
 			hasplugins = val;
 			break;
-		case 6:
+		case 5:
 			cancompile = val;
 			break;
 		default:

@@ -40,8 +40,10 @@ void MyDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 
 void MyDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
-    MyEditLine* spinbox = static_cast<MyEditLine*>(editor);
-    QString value = spinbox->text();
+    MyEditLine* str = static_cast<MyEditLine*>(editor);
+    QString value = str->text();
+    if (model->data(index).toString() == value)
+        return; // Избегать двойного вызова
     model->setData(index, value, Qt::EditRole);
 }
 

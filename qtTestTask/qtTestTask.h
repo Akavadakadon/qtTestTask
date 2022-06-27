@@ -7,6 +7,8 @@
 #include "TD.h"
 #include "MyDelegate.h"
 #include "myThread.h"
+#include "model.cpp"
+#include "SettingsDialog.h"
 
 class qtTestTask : public QMainWindow
 {
@@ -23,9 +25,13 @@ private:
 
 private slots:
     void rmEditor(int row);
-    void ClearTable();
-    void LoadTable();
+    void ClearTable_clicked();
+    void LoadTable_clicked();
+    void Settings_clicked();
+    void Export_clicked();
+    
     void Display(MySQLModel* myModel);
+    void msgBox(QString text, QString title = "");
     void Mouse(QMouseEvent* event);
     void Mouse1(const QModelIndex& index);
     void viewClicked(const QModelIndex& idx);

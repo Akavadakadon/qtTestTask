@@ -6,21 +6,17 @@
 #include <QTextStream>
 #include <QXmlStreamReader>
 #include <QSqlError>
-#include <QDebug>Q_DEBUG
+#include <QDebug>
 
 using namespace std;
 
 int MyDB::Connect()
 {
         db = QSqlDatabase::addDatabase("QSQLITE");
+        //bdInfo::dataBase
         db.setHostName(dbInfo.host);
         QDir databasePath;
-        db.setDatabaseName(dbInfo.dataBase);
-        if (dbInfo.login)
-        {
-            db.setUserName(dbInfo.userName);
-            db.setPassword(dbInfo.password);
-        }
+        db.setDatabaseName(bdInfo::dataBase);
         bool ok = db.open(); 
         if (!ok)
             return 0;
@@ -32,25 +28,22 @@ QList<EditorModel> MyDB::Load()
     auto tables = db.tables();
     QList<EditorModel> content;
 
-    auto yeye = tables.contains(dbInfo.table);
+    auto yeye = tables.contains(bdInfo::table);
     // TODO: Удалить true
-    if (!yeye || true)
+    if (!yeye || false)
     {
         // Пустая бд, заполняем ее.
-        // Загружаем из TestFolder .xml
-        content = LoadDefault();
         Create(dbInfo.table);
+        /*content = LoadDefault();
         for (EditorModel editor: content)
         {
             Insert(editor);
-        }
-        // TODO: Проверка, есть ли данные с таблице
+        }*/
     }
     else
     {
-
+        content= SelectAll();
     }
-    Select();
     //emit MyDB::DataReady(content);
     return content;
 }
@@ -60,7 +53,7 @@ void MyDB::Create(QString table)
 {
     QSqlQuery query;
 
-    query.prepare("CREATE TABLE IF NOT EXISTS "+ table +"(\
+    query.prepare("CREATE TABLE IF NOT EXISTS "+ bdInfo::table +"(\
         id	INTEGER NOT NULL primary key AUTOINCREMENT, \
         texteditor	TEXT NOT NULL UNIQUE, \
         fileformats	TEXT, \
@@ -76,8 +69,9 @@ void MyDB::Create(QString table)
 void MyDB::Insert(EditorModel newEditor)
 {
     QSqlQuery query;
-    query.prepare("INSERT INTO " + dbInfo.table + " (texteditor, fileformats, encoding, hasintellisense, hasplugins, cancompile) "
-        "VALUES (?, ?, ?, ?, ?, ?)");
+    query.prepare("INSERT INTO " + bdInfo::table + " (id, texteditor, fileformats, encoding, hasintellisense, hasplugins, cancompile) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)");
+    query.addBindValue(newEditor.id);
     query.addBindValue(newEditor.texteditor);
     query.addBindValue(newEditor.fileformats);
     query.addBindValue(newEditor.encoding);
@@ -90,22 +84,76 @@ void MyDB::Insert(EditorModel newEditor)
 }
 
 //sql DELETE
-void MyDB::Delete()
+bool MyDB::Delete(EditorModel editor)
 {
-        
+    QSqlQuery query;
+    QString req = "DELETE from " + bdInfo::table + " WHERE texteditor = '" + editor.texteditor + "' and \
+        fileformats='" + editor.fileformats + "' and \
+        encoding='" + editor.encoding + "' and \
+        hasintellisense='" + editor.hasintellisense + "' and \
+        hasplugins='" + editor.hasplugins + "' and \
+        cancompile= '" + editor.cancompile + "'";
+    query.prepare(req);
+    auto res = query.exec();
+    auto s1 = query.lastQuery();
+    auto s2 = query.lastError().text();
+    return res;
 }
 
 //sql UPDATE
-void MyDB::Update()
+void MyDB::Update(EditorModel changedEditor, int col)
 {
+    QSqlQuery query;
+    QString req = "UPDATE  " + bdInfo::table;
 
+    switch (col)
+    {
+    case 0:
+        req += " SET texteditor = '" + changedEditor.texteditor + "' ";
+        break;
+    case 1:
+        req += " SET fileformats = '" + changedEditor.fileformats + "' ";
+        break;
+    case 2:
+        req += " SET encoding = '" + changedEditor.encoding + "' ";
+        break;
+    case 3:
+        req += " SET hasintellisense = '" + changedEditor.hasintellisense + "' ";
+        break;
+    case 4:
+        req += " SET hasplugins = '" + changedEditor.hasplugins + "' ";
+        break;
+    case 5:
+        req += " SET cancompile = '" + changedEditor.cancompile + "' ";
+        break;
+    default:
+        break;
+    }
+
+    req += " WHERE ";
+    req += (col == 0 ? "true " : "texteditor = '" + changedEditor.texteditor + "' ");
+    req += "and ";
+    req += (col == 1 ? "true " : "fileformats = '" + changedEditor.fileformats + "' ");
+    req += "and ";
+    req += (col == 2 ? "true " : "encoding = '" + changedEditor.encoding + "' ");
+    req += "and ";
+    req += (col == 3 ? "true " : "hasintellisense = '" + changedEditor.hasintellisense + "' ");
+    req += "and ";
+    req += (col == 4 ? "true " : "hasplugins = '" + changedEditor.hasplugins +"' ");
+    req += "and ";
+    req += (col == 5 ? "true " : "cancompile = '" + changedEditor.cancompile + "' ");
+
+    query.prepare(req);
+    auto res = query.exec();
+    auto s1 = query.lastQuery();
+    auto s2 = query.lastError().text();
 }
 
 //sql SELECT
-void MyDB::Select()
+QList<EditorModel> MyDB::SelectAll()
 {
     QSqlQuery query;
-    query.prepare("SELECT * from " + dbInfo.table);
+    query.prepare("SELECT * from " + bdInfo::table);
     auto res = query.exec();
     auto s1 = query.lastQuery();
     auto s2 = query.lastError().text();
@@ -122,22 +170,40 @@ void MyDB::Select()
         editor.cancompile = query.value("cancompile").toString();
         editorList.append(editor);
     }
+    return editorList;
+}
+
+bool MyDB::IfExist(EditorModel editor)
+{
+    QSqlQuery query;
+    QString req = "SELECT * from " + bdInfo::table + " WHERE texteditor = '" + editor.texteditor +"' and \
+        fileformats='" + editor.fileformats + "' and \
+        encoding='" + editor.encoding + "' and \
+        hasintellisense='" + editor.hasintellisense + "' and \
+        hasplugins='" + editor.hasplugins + "' and \
+        cancompile= '" + editor.cancompile+"'";
+    query.prepare(req);
+    auto res = query.exec();
+    auto s1 = query.lastQuery();
+    auto s2 = query.lastError().text();
+    int i = 0;
+    while (query.next()) { i++; }
+    return i;
+}
+
+void MyDB::Select()
+{
 
 }
 
 QList<EditorModel> MyDB::LoadDefault()
 {
-    QString path = "TestFolder/";
+    QString path = bdInfo::folder +"/";
     QDir directory(path);
     QStringList files = directory.entryList(QStringList() << "*.xml", QDir::Files);
     QXmlStreamReader xmlReader;
     QList<EditorModel> editorList;
-    if (files.size() == 0)
-    {
-        path = "../TestFolder/";
-        directory = QDir(path);
-        files = directory.entryList(QStringList() << "*.xml", QDir::Files);
-    }
+
     if (files.size() == 0)
     {
         return editorList;
@@ -180,6 +246,7 @@ QList<EditorModel> MyDB::LoadDefault()
                 allok = false;
             }
         }
+        editor.id = editorList.size();
         if (allok)
             editorList.append(editor);
     }
@@ -213,6 +280,11 @@ DBinf MyDB::LoadFile(QString filePath)
 }
 
 MyDB::MyDB(DBinf _dbInfo):dbInfo(_dbInfo)
+{
+    db = QSqlDatabase::addDatabase("QSQLITE");
+}
+
+MyDB::MyDB()
 {
     db = QSqlDatabase::addDatabase("QSQLITE");
 }
