@@ -4,6 +4,7 @@
 #include <QModelIndex>
 #include <QMessageBox>
 #include "EditorWindow.h"
+#include "ImportWindow.h"
 
 
 QString bdInfo::dataBase = "testTask.db";
@@ -38,7 +39,7 @@ qtTestTask::qtTestTask(QWidget* parent)
 
     ui.tableView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui.tableView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(tableContextMenu(const QPoint&)));
-    connect(ui.pushButton_4, &QPushButton::clicked, thread, &myThread::ImportXml);
+    connect(ui.pushButton_4, &QPushButton::clicked, this, &qtTestTask::LoadTable_clicked);
 
     myDelegate = new MyDelegate(this);
     ui.tableView->setItemDelegate(myDelegate);
@@ -89,18 +90,16 @@ void qtTestTask::tableContextMenu(const QPoint& pos)
         selectedRow.set(i, ui.tableView->model()->data(ui.tableView->model()->index(row, i)).toString());
 
     connect(&action1, &QAction::triggered, [this, selectedRow]() {
-        thread->rmEditor(selectedRow);
+        QMetaObject::invokeMethod(thread, "rmEditor", Q_ARG(EditorModel, selectedRow));
         });
 
     connect(&action2, &QAction::triggered, [this, selectedRow]() {
-        thread->ExportToXML(selectedRow);
+        QMetaObject::invokeMethod(thread, "ExportToXML", Q_ARG(EditorModel, selectedRow));
         });
 
     connect(&action3, &QAction::triggered, [this, selectedRow]() {
         EditorWindow* wind = new EditorWindow(selectedRow);
         wind->exec();
-        //QMetaObject::invokeMethod(thread, "UpdateEditor");
-        //thread->UpdateEditor(selectedRow, wind->updatedEditor);
 
         emit UpdateEditor(selectedRow, wind->updatedEditor);
 
@@ -126,6 +125,16 @@ void qtTestTask::ClearTable_clicked()
 
 void qtTestTask::LoadTable_clicked()
 {
+    //connect(ui.pushButton_4, &QPushButton::clicked, thread, &myThread::ImportXml);
+    QMetaObject::invokeMethod(thread, "ImportXml");
+
+
+    ImportWindow* window = new ImportWindow();
+    connect(thread, &myThread::ImportSuccessed, window, &ImportWindow::ImportSuccessed);
+    connect(thread, &myThread::ImportFailed, window, &ImportWindow::ImportFailed);
+
+    window->show();
+
     //thread = new myThread();
 
     //connect(thread, &myThread::started, thread, &myThread::LoadDB);

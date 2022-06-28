@@ -45,13 +45,9 @@ void myThread::LoadDB()
 
 void myThread::ImportXml()
 {
+    //QThread:msleep(10000);
     QList<EditorModel> modelEditors = myModel->getEditors();
 
-    ImportWindow* window = new ImportWindow();
-    connect(myDB, &MyDB::ImportSuccessed, window, &ImportWindow::ImportSuccessed);
-    connect(myDB,&MyDB::ImportFailed,window,&ImportWindow::ImportFailed);
-
-    window->show();
 
     auto content = myDB->LoadDefault();
     int counter = 0;
@@ -61,12 +57,12 @@ void myThread::ImportXml()
         {
             modelEditors.append(content[i]);
             myDB->Insert(content[i]);
-            window->ImportSuccessed(content[i].texteditor);
+            emit ImportSuccessed(content[i].texteditor);
             counter++;
         }
         else
         {
-            window->ImportFailed(content[i].texteditor, QString::fromLocal8Bit("Дубликат"));
+            emit ImportFailed(content[i].texteditor, QString::fromLocal8Bit("Дубликат"));
         }
     }
     //QList<EditorModel> content;
@@ -78,7 +74,11 @@ void myThread::ImportXml()
 
 void myThread::ExportToXML(const EditorModel selectedRow)
 {
-    QString path = bdInfo::folder + "/" + selectedRow.texteditor + ".xml1";
+    //QThread:msleep(10000);
+    int i = 0;
+    QString path = bdInfo::folder + "/" + selectedRow.texteditor + ".xml";
+    while (QFile::exists(path))
+        path = bdInfo::folder + "/" + selectedRow.texteditor + "(" + QString::number(++i) + ")" + ".xml";
 
     QFile file(path);
     file.open(QIODevice::WriteOnly);
@@ -100,7 +100,7 @@ void myThread::ExportToXML(const EditorModel selectedRow)
 
 void myThread::UpdateEditor(EditorModel selectedRow, EditorModel updatedEditor)
 {
-    QThread:msleep(10000);
+    //QThread:msleep(10000);
     if (!myDB->IfExist(updatedEditor))
     {
         if (myDB->IfExist(selectedRow))

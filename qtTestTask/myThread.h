@@ -23,5 +23,7 @@ public slots:
 signals:
     void DataLoaded(MySQLModel* myModel);
     void PopMsgBox(QString text, QString title);
+    void ImportSuccessed(QString fileName);
+    void ImportFailed(QString fileName, QString error);
 };
 
