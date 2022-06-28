@@ -15,18 +15,13 @@ private:
 public:
     myThread();
 public slots:
-    void Start();
-    void rmEditor(int row);
+    void LoadDB();
     void rmEditor(EditorModel selectedRow);
-    void exportXml();
-    void dataChanged()
-    {
-
-    }
-    //void DataReady(MySQLModel* myModel);
+    void ImportXml();
+    void ExportToXML(const EditorModel selectedRow);
+    void UpdateEditor(EditorModel selectedRow, EditorModel updatedEditor);
 signals:
-    void dataLoaded(MySQLModel* myModel);
+    void DataLoaded(MySQLModel* myModel);
     void PopMsgBox(QString text, QString title);
-    //TODO: Replace dataLoaded with dataReady
 };
 

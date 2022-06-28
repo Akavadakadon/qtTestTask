@@ -12,7 +12,8 @@ MyDelegate::MyDelegate(QObject* parent)
 class MyEditLine :public QLineEdit
 {
 public:
-    MyEditLine() {}
+    MyEditLine(    ) {
+    }
     MyEditLine(QWidget* parent = nullptr) :QLineEdit(parent) {}
     void MyEditLine::contextMenuEvent(QContextMenuEvent* event)
     {
@@ -21,6 +22,11 @@ public:
         contextMenu.exec(event->globalPos());
     }
 };
+
+void MyDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+    QItemDelegate::paint(painter, option, index);
+}
 
 QWidget* MyDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
@@ -52,3 +58,12 @@ void MyDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewIte
     editor->setGeometry(option.rect);
 }
 
+bool MyDelegate::eventFilter(QObject* object, QEvent* event)
+{
+    return QItemDelegate::eventFilter(object, event);
+}
+
+bool MyDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index)
+{
+    return QItemDelegate::editorEvent(event, model, option, index);
+}

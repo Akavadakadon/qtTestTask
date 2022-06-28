@@ -25,7 +25,6 @@ void MySQLModel::addEditor(EditorModel editor)
     editors.append(editor);
 }
 
-
 QVariant MySQLModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole)
@@ -55,7 +54,6 @@ QVariant MySQLModel::headerData(int section, Qt::Orientation orientation, int ro
     }
     return QAbstractTableModel::headerData(section, orientation, role);
 }
-
 
 QVariant MySQLModel::data(const QModelIndex & index, int role) const
 {

@@ -28,9 +28,12 @@ public:
 	bool Delete(EditorModel editor);
 	void Update(EditorModel changedEditor, int col);// 
 	void Create(QString table);// Create
+	void Close();
 signals:
 	void DataReady(QList<EditorModel> db);
 	EditorModel rmEditor();
 	void initiated(QList<EditorModel> db);
 	void error(const char* error);
+	void ImportSuccessed(QString fileName);
+	void ImportFailed(QString fileName, QString error);
 };

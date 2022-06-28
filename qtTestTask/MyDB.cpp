@@ -12,15 +12,20 @@ using namespace std;
 
 int MyDB::Connect()
 {
-        db = QSqlDatabase::addDatabase("QSQLITE");
-        //bdInfo::dataBase
-        db.setHostName(dbInfo.host);
-        QDir databasePath;
-        db.setDatabaseName(bdInfo::dataBase);
-        bool ok = db.open(); 
-        if (!ok)
-            return 0;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    //bdInfo::dataBase
+    db.setHostName(dbInfo.host);
+    QDir databasePath;
+    db.setDatabaseName(bdInfo::dataBase);
+    bool ok = db.open();
+    if (!ok)
+        return 0;
     return 0;
+}
+
+void MyDB::Close()
+{
+    db.close();
 }
 
 QList<EditorModel> MyDB::Load()
@@ -29,22 +34,15 @@ QList<EditorModel> MyDB::Load()
     QList<EditorModel> content;
 
     auto yeye = tables.contains(bdInfo::table);
-    // TODO: Удалить true
     if (!yeye || false)
     {
         // Пустая бд, заполняем ее.
         Create(dbInfo.table);
-        /*content = LoadDefault();
-        for (EditorModel editor: content)
-        {
-            Insert(editor);
-        }*/
     }
     else
     {
         content= SelectAll();
     }
-    //emit MyDB::DataReady(content);
     return content;
 }
 
@@ -55,7 +53,7 @@ void MyDB::Create(QString table)
 
     query.prepare("CREATE TABLE IF NOT EXISTS "+ bdInfo::table +"(\
         id	INTEGER NOT NULL primary key AUTOINCREMENT, \
-        texteditor	TEXT NOT NULL UNIQUE, \
+        texteditor	TEXT NOT NULL, \
         fileformats	TEXT, \
         encoding	TEXT, \
         hasintellisense	TEXT, \
@@ -69,9 +67,8 @@ void MyDB::Create(QString table)
 void MyDB::Insert(EditorModel newEditor)
 {
     QSqlQuery query;
-    query.prepare("INSERT INTO " + bdInfo::table + " (id, texteditor, fileformats, encoding, hasintellisense, hasplugins, cancompile) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?)");
-    query.addBindValue(newEditor.id);
+    query.prepare("INSERT INTO " + bdInfo::table + " (texteditor, fileformats, encoding, hasintellisense, hasplugins, cancompile) "
+        "VALUES (?, ?, ?, ?, ?, ?)");
     query.addBindValue(newEditor.texteditor);
     query.addBindValue(newEditor.fileformats);
     query.addBindValue(newEditor.encoding);
@@ -198,7 +195,7 @@ void MyDB::Select()
 
 QList<EditorModel> MyDB::LoadDefault()
 {
-    QString path = bdInfo::folder +"/";
+    QString path = bdInfo::folder + "/";
     QDir directory(path);
     QStringList files = directory.entryList(QStringList() << "*.xml", QDir::Files);
     QXmlStreamReader xmlReader;
@@ -241,14 +238,17 @@ QList<EditorModel> MyDB::LoadDefault()
                 continue;
             if (xmlReader.hasError())
             {
-                //QString error = xmlReader.errorString();
-                //error = " xml error: " + editor.texteditor + " " + error;
+                QString error = xmlReader.errorString();
+                error = " xml error: " + error;
                 allok = false;
+                emit ImportFailed(filename, error);
             }
         }
         editor.id = editorList.size();
         if (allok)
             editorList.append(editor);
+        xmlReader.clear();
+        file->close();
     }
     return editorList;
 }

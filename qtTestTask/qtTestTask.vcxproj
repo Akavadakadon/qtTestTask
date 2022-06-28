@@ -85,10 +85,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EditorWindow.cpp" />
+    <ClCompile Include="ImportWindow.cpp" />
     <ClCompile Include="MyDelegate.cpp" />
     <ClCompile Include="SettingsDialog.cpp" />
-    <ClCompile Include="TD.cpp" />
     <QtRcc Include="qtTestTask.qrc" />
+    <QtUic Include="EditorWindow.ui" />
+    <QtUic Include="ImportWindow.ui" />
     <QtUic Include="qtTestTask.ui" />
     <QtMoc Include="qtTestTask.h" />
     <ClCompile Include="model.cpp" />
@@ -105,10 +108,11 @@
   <ItemGroup>
     <QtMoc Include="MyDelegate.h" />
     <QtMoc Include="MySQLModel.h" />
-    <QtMoc Include="TD.h" />
     <QtMoc Include="myThread.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="EditorWindow.h" />
+    <ClInclude Include="ImportWindow.h" />
     <ClInclude Include="SettingsDialog.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

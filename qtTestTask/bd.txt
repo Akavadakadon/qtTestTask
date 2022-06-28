@@ -1,4 +1,0 @@
-host:localhost
-dataBase:testTask.db
-userName:userName
-password:password

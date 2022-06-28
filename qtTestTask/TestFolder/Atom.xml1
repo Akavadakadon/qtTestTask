@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<texteditor>
+    <texteditor>Atom</texteditor>
+</texteditor>
+<fileformats>
+    <fileformats>Atom</fileformats>
+</fileformats>
+<encoding>
+    <encoding>ANSI; UTF;</encoding>
+</encoding>
+<hasintellisense>
+    <hasintellisense>true</hasintellisense>
+</hasintellisense>
+<hasplugins>
+    <hasplugins>true</hasplugins>
+</hasplugins>
+<cancompile>
+    <cancompile>false</cancompile>
+</cancompile>

@@ -1,4 +1,11 @@
 #include "myThread.h"
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+#include <QXmlStreamReader>
+#include <QMessageBox>
+#include "ImportWindow.h"
+
 
 MyDB* myThread::myDB = new MyDB();
 
@@ -6,36 +13,21 @@ myThread::myThread()
 {
 }
 
-void myThread::rmEditor(int row) //EditorModel selectedRow
-{
-    //TODO: Дописать до контролера и до бд
-
-
-    //TODO: Дописать путь обратно, обновилась ли таблица
-    //dataLoaded(MySQLModel * myModel)
-
-
-}
 void myThread::rmEditor(EditorModel selectedRow) //
 {
-    //TODO: Дописать до контролера и до бд
-
     if (myDB->IfExist(selectedRow))
         if (myDB->Delete(selectedRow))
         {
             myModel = new MySQLModel(myDB->SelectAll());
 
-            emit myThread::dataLoaded(myModel);
+            emit myThread::DataLoaded(myModel);
             return;
         }
-    
-    //TODO: Окно, что нельзя удалить
-    //dataLoaded(MySQLModel * myModel)
-
 }
 
-void myThread::Start()
+void myThread::LoadDB()
 {
+    myDB->Close();
     auto dbInfo = MyDB::LoadFile("bd.txt");
 
     qDebug() << bdInfo::dataBase;
@@ -44,20 +36,22 @@ void myThread::Start()
 
     myDB->Connect();
     auto content = myDB->Load();
-    //TODO: сигнал есть ли данные для загрузки
     myModel= new MySQLModel(content);
 
     connect(myModel, &MySQLModel::dataChanged, myDB, &MyDB::Update);
-    //connect(myDB, &MyDB::DataReady, [this](MySQLModel* myModel) {DataLoaded(myModel); });
 
-    emit myThread::dataLoaded(myModel);
-    emit myThread::PopMsgBox(QString("Loaded %1 editors").arg(myModel->rowCount()), "DB");
-    //exportXml();
+    emit myThread::DataLoaded(myModel);
 }
 
-void myThread::exportXml()
+void myThread::ImportXml()
 {
     QList<EditorModel> modelEditors = myModel->getEditors();
+
+    ImportWindow* window = new ImportWindow();
+    connect(myDB, &MyDB::ImportSuccessed, window, &ImportWindow::ImportSuccessed);
+    connect(myDB,&MyDB::ImportFailed,window,&ImportWindow::ImportFailed);
+
+    window->show();
 
     auto content = myDB->LoadDefault();
     int counter = 0;
@@ -66,13 +60,55 @@ void myThread::exportXml()
         if (!myDB->IfExist(content[i]))
         {
             modelEditors.append(content[i]);
-            //TODO: Добавить insert
+            myDB->Insert(content[i]);
+            window->ImportSuccessed(content[i].texteditor);
             counter++;
+        }
+        else
+        {
+            window->ImportFailed(content[i].texteditor, QString::fromLocal8Bit("Дубликат"));
         }
     }
     //QList<EditorModel> content;
     myModel = new MySQLModel(modelEditors);
 
-    emit myThread::dataLoaded(myModel);
-    emit myThread::PopMsgBox(QString("Exported %1 editors").arg(counter), "XML");
+    //emit myThread::PopMsgBox(QString("Exported %1 editors"), "XML");
+    emit myThread::DataLoaded(myModel);
 }
+
+void myThread::ExportToXML(const EditorModel selectedRow)
+{
+    QString path = bdInfo::folder + "/" + selectedRow.texteditor + ".xml1";
+
+    QFile file(path);
+    file.open(QIODevice::WriteOnly);
+
+    QXmlStreamWriter stream(&file);
+    stream.setAutoFormatting(true);
+    stream.writeStartDocument();
+    stream.writeStartElement("root");
+    stream.writeTextElement("texteditor",selectedRow.texteditor);
+    stream.writeTextElement("fileformats", selectedRow.fileformats);
+    stream.writeTextElement("encoding", selectedRow.encoding);
+    stream.writeTextElement("hasintellisense", selectedRow.hasintellisense);
+    stream.writeTextElement("hasplugins", selectedRow.hasplugins);
+    stream.writeTextElement("cancompile", selectedRow.cancompile);
+    stream.writeEndElement();
+    stream.writeEndDocument();
+    file.close();
+}
+
+void myThread::UpdateEditor(EditorModel selectedRow, EditorModel updatedEditor)
+{
+    QThread:msleep(10000);
+    if (!myDB->IfExist(updatedEditor))
+    {
+        if (myDB->IfExist(selectedRow))
+            myDB->Delete(selectedRow);
+        myDB->Insert(updatedEditor);
+    }
+    auto content = myDB->SelectAll();
+    myModel = new MySQLModel(content);
+    emit myThread::DataLoaded(myModel);
+}
+

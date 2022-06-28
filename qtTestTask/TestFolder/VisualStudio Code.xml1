@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <texteditor>VisualStudio Code</texteditor>
+    <fileformats>VisualStudio Code</fileformats>
+    <encoding>1</encoding>
+    <hasintellisense>true</hasintellisense>
+    <hasplugins>true</hasplugins>
+    <cancompile>true</cancompile>
+</root>

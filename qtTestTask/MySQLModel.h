@@ -25,7 +25,6 @@ public:
 
 
 signals:
-    //TODO: содинить с контроллером и БД
     void dataChanged(EditorModel changedEditor, int col);
 };
 

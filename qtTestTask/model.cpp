@@ -59,6 +59,7 @@ public:
 
 struct EditorModel
 {
+
 	// dbInfo.dataBase
 	int id;
 	QString texteditor;

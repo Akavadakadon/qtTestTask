@@ -52,13 +52,16 @@
     <ClCompile Include="model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TD.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MyDelegate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SettingsDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -69,13 +72,13 @@
     <QtMoc Include="myThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="TD.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="MyDelegate.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="MySQLModel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="EditorWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -83,9 +86,18 @@
     <QtUic Include="SettingsDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="ImportWindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="EditorWindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SettingsDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
